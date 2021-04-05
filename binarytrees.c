@@ -9,6 +9,13 @@ struct tree {
         struct tree *right;
 };
 
+struct depth {
+        unsigned char left;
+        unsigned char right;
+};
+
+struct depth depth;
+
 static void print_tree(struct tree *tree, int spaces)
 {
         if (tree) {
@@ -65,14 +72,36 @@ int populate_tree(struct tree **tree, int value)
 int tree_traversal(struct tree *tree)
 {
         struct tree *temp = tree;
+
         while (temp) {
-                if(temp->left)
+                if (temp->left) {
+                        depth.left++;
                         tree_traversal(temp->left);
-                if (temp->right)
+                }
+                if (temp->right) {
+                        depth.right++;
                         tree_traversal(temp->right);
+                }
                 break;
         }
+
         return 0;
+}
+
+/* Free the tree node, if it doesn't have any branches
+ * in: tree - tree node
+ **/
+void free_tree(struct tree *tree)
+{
+        if (tree) {
+               if (!(tree->left) && !(tree->right))
+                       free(tree);
+               else if (tree->left)
+                       free_tree(tree->left);
+               else if (tree->right)
+                       free_tree(tree->right);
+        }
+        return;
 }
 
 int main(int argc, char *argv[])
@@ -81,10 +110,17 @@ int main(int argc, char *argv[])
         (void )argv;
         struct tree *btree = NULL;
         int i = 0;
+
         for (; i < 10; i++) {
                 int r = rand() % 100;
                 populate_tree(&btree, r);
         }
+        depth.left = 0;
+        depth.right = 0;
+        tree_traversal(btree);
+
         print_tree(btree, 10);
+        printf("depth left = %d depth = right = %d", depth.left, depth.right);
+        free(btree);
         return 0;
 }
