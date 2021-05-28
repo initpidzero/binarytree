@@ -17,6 +17,16 @@ struct depth {
 
 struct depth depth;
 
+/* in order print */
+static void inorder(struct tree *tree)
+{
+        if (tree) {
+                inorder(tree->left);
+                printf("%d\n", tree->value);
+                inorder(tree->right);
+        }
+}
+
 /* pre-order traversal here */
 static void print_tree(struct tree *tree, int spaces)
 {
@@ -163,7 +173,8 @@ int main(int argc, char *argv[])
         depth.right = 0;
         tree_traversal(btree);
 
-        print_tree(btree, 10);
+        //print_tree(btree, 10);
+        inorder(btree);
         printf("depth left = %d depth = right = %d\n", depth.left, depth.right);
         free(btree);
         return 0;
