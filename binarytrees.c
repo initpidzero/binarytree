@@ -51,6 +51,19 @@ int remove_tree_node(struct tree *tree, int value)
         return 0;
 }
 
+/* Find minimum node in tree
+ * in: tree to find minimum node
+ * return: adress of node with minimum key value
+ * */
+static struct tree *tree_min(struct tree *tree)
+{
+        struct tree *temp = tree;
+        while (temp->left)
+                temp = temp->left;
+
+        return temp;
+}
+
 /* Add a tree node
  * in: tree - binary tree to be initalised
  * out: tree - initalised binary tree
