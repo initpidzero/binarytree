@@ -51,6 +51,19 @@ int remove_tree_node(struct tree *tree, int value)
         return 0;
 }
 
+/* Find maximum node in tree
+ * in: tree to find maximum node
+ * return: adress of node with maximum key value
+ * */
+static struct tree *tree_max(struct tree *tree)
+{
+        struct tree *temp = tree;
+        while (temp->right)
+                temp = temp->right;
+
+        return temp;
+}
+
 /* Find minimum node in tree
  * in: tree to find minimum node
  * return: adress of node with minimum key value
