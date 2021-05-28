@@ -16,7 +16,7 @@ struct depth {
 };
 
 struct depth depth;
-
+#define TOTALNODES 10
 /* in order print */
 static void inorder(struct tree *tree)
 {
@@ -31,15 +31,12 @@ static void inorder(struct tree *tree)
 static void print_tree(struct tree *tree, int spaces)
 {
         if (tree) {
-                printf("%*c%d\n", spaces, ' ', tree->value);
+                spaces = spaces + TOTALNODES;
+                printf("%*c%d\n", spaces - TOTALNODES, ' ', tree->value);
                 if (tree->left) {
-                        printf("%*c/\n", spaces,' ');
-                        printf("%*c", spaces / 2,' ');
-                        print_tree(tree->left, spaces / 2);
+                        print_tree(tree->left, spaces);
                 }
                 if (tree->right) {
-                        printf("%*c\\\n", spaces + spaces / 2, ' ');
-                        printf("%*c", spaces + spaces / 2, ' ');
                         print_tree(tree->right, spaces);
                 }
         }
@@ -165,7 +162,7 @@ int main(int argc, char *argv[])
         struct tree *btree = NULL;
         int i = 0;
 
-        for (; i < 11; i++) {
+        for (; i < TOTALNODES; i++) {
                 int r = rand() % 100;
                 populate_tree(&btree, r);
         }
@@ -173,7 +170,7 @@ int main(int argc, char *argv[])
         depth.right = 0;
         tree_traversal(btree);
 
-        //print_tree(btree, 10);
+        print_tree(btree, 0);
         inorder(btree);
         printf("depth left = %d depth = right = %d\n", depth.left, depth.right);
         printf("min = %d max = %d\n", tree_min(btree)->value, tree_max(btree)->value);
