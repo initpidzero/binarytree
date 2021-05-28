@@ -114,7 +114,7 @@ int populate_tree(struct tree **tree, int value)
         if(*tree == NULL)
                 add_tree_node(tree, value);
         else
-                if((*tree)->value < value)
+                if((*tree)->value > value)
                         populate_tree(&((*tree)->left), value);
                 else
                         populate_tree(&((*tree)->right), value);
@@ -176,6 +176,7 @@ int main(int argc, char *argv[])
         //print_tree(btree, 10);
         inorder(btree);
         printf("depth left = %d depth = right = %d\n", depth.left, depth.right);
+        printf("min = %d max = %d\n", tree_min(btree)->value, tree_max(btree)->value);
         free(btree);
         return 0;
 }
