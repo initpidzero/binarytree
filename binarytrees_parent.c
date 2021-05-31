@@ -173,6 +173,7 @@ int remove_tree_node(struct tree *tree, int value)
                 succ->left = node->left;
                 succ->left->parent = succ;
         }
+        free(node);
         return 0;
 }
 
@@ -269,6 +270,8 @@ int main(int argc, char *argv[])
         printf("depth left = %d depth = right = %d\n", depth.left, depth.right);
         printf("min = %d max = %d\n", tree_min(btree)->value, tree_max(btree)->value);
         test_ps(btree, test);
+        remove_tree_node(btree, test);
+        print_tree(btree, 0);
         free(btree);
         return 0;
 }
