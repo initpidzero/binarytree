@@ -17,6 +17,26 @@ struct depth {
         unsigned char right;
 };
 
+/* Find node with the key
+ * in: tree: root of the tree
+ * in: key: key to match the node
+ * return the node with corresponding key value
+ */
+static struct tree *tree_traversal(struct tree *tree, int key)
+{
+        struct tree *temp = tree;
+
+        while (temp && temp->value != key) {
+                if (key < temp->value) {
+                        temp = temp->left;
+                } else {
+                        temp = temp->right;
+                }
+        }
+
+        return temp;
+}
+
 struct depth depth;
 #define TOTALNODES 10
 /* in order print */
@@ -46,18 +66,21 @@ static void print_tree(struct tree *tree, int spaces)
         return;
 }
 
-/* remove node from tree
- * in: tree
- * in: value
- * out: tree
- * return 0 or 1
- */
-int remove_tree_node(struct tree *tree, int value)
+/* replace u with v */
+static void transplace(struct tree *tree, struct tree *u, struct tree *v)
 {
-        struct tree *parent = NULL;
-        parent = NULL;
+        if (tree == NULL)
+                return;
+        if (u == tree) {
+                v = u;
+                v->parent = NULL;
+        }
+        v->parent = u->parent;
+        if ( u->parent->left == u)
+                u->parent->left = v;
+        else
+                u->parent->right = v;
 
-        return 0;
 }
 
 /* Find maximum node in tree
@@ -87,18 +110,18 @@ static struct tree *tree_min(struct tree *tree)
 }
 
 /* find successor, biggest element since this node */
-static struct tree *successor(struct tree *tree)
+static struct tree *successor(struct tree *node)
 {
         struct tree *succ;
-        struct tree *temp = tree;
+        struct tree *temp = node;
 
-        if(tree->right) {
-                succ = tree_min(tree->right);
+        if(node->right) {
+                succ = tree_min(node->right);
                 return succ;
         }
 
-        succ = tree->parent;
-        while (succ && temp == succ->right) {
+        succ = node->parent;
+        while (succ && temp == succ->right) { /* if it is right child */
                 temp = succ;
                 succ = succ->parent;
 
@@ -107,20 +130,50 @@ static struct tree *successor(struct tree *tree)
 }
 
 /* find predecessor, smallest element since this node */
-static struct tree *predecessor(struct tree *tree)
+static struct tree *predecessor(struct tree *node)
 {
         struct tree *pred;
-        struct tree *temp = tree;
-        if (tree->left) {
-                pred = tree_max(tree->left);
+        struct tree *temp = node;
+        if (node->left) {
+                pred = tree_max(node->left);
                 return pred;
         }
-        pred = tree->parent;
-        while (pred && temp == pred->left){
+        pred = node->parent;
+        while (pred && temp == pred->left) { /* if it is a left child */
                 temp = pred;
                 pred = pred->parent;
         }
         return pred;
+}
+
+/* remove node from tree
+ * in: tree
+ * in: value
+ * out: tree
+ * return 0 or 1
+ */
+int remove_tree_node(struct tree *tree, int value)
+{
+        struct tree *node = tree_traversal(tree, value);
+        if (node == NULL)
+                return -1;
+
+        if (node->left == NULL)
+               transplace(tree, node, node->right);
+        else if (node->right == NULL)
+               transplace(tree, node, node->left);
+        else {
+                struct tree *succ = tree_min(node->right);
+                if (succ->parent != node) {
+                        transplace(tree, succ, succ->right);
+                        succ->right= node->right;
+                        succ->right->parent = node->parent;
+                }
+                transplace(tree, node, succ);
+                succ->left = node->left;
+                succ->left->parent = succ;
+        }
+        return 0;
 }
 
 /* Add a tree node
@@ -157,24 +210,6 @@ int populate_tree(struct tree **tree, int value, struct tree *parent)
                         populate_tree(&((*tree)->right), value, *tree);
         return 0;
 }
-
-/*
- */
-static struct tree *tree_traversal(struct tree *tree, int key)
-{
-        struct tree *temp = tree;
-
-        while (temp && temp->value != key) {
-                if (key < temp->value) {
-                        temp = temp->left;
-                } else {
-                        temp = temp->right;
-                }
-        }
-
-        return temp;
-}
-
 /* Free the tree node, if it doesn't have any branches
  * in: tree - tree node
  **/
